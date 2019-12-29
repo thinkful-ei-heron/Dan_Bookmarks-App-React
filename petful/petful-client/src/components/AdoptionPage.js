@@ -1,14 +1,17 @@
 import React, { Component } from 'react';
 import Queue from '../Queue.js';
-import PetQueue from '../components/PetQueue';
-import Adopted from '../components/Adopted';
+import PetQueue from './PetQueue';
+import Line from './Line.js';
+import LastAdoption from './LastAdoption';
 import config from '../config';
+import './AdoptionPage.css';
 
 export default class AdoptionPage extends Component {
   state = {
     petQueue: null,
     adoptionQueue: null,
-    adopted: null
+    adopted: null,
+    adoptee: null
   };
 
   API = config.API_ENDPOINT;
@@ -70,9 +73,12 @@ export default class AdoptionPage extends Component {
         adoptionQueue.dequeue();
         this.setState({ adoptionQueue: adoptionQueue });
       } else {
-        petQueue.dequeue();
-        adoptionQueue.dequeue();
-        this.setState({ petQueue: petQueue, adoptionQueue: adoptionQueue });
+        this.setState({
+          petQueue: petQueue,
+          adoptionQueue: adoptionQueue,
+          adopted: petQueue.dequeue().name,
+          adoptee: adoptionQueue.dequeue().name
+        });
       }
     }, 3000);
   }
@@ -110,13 +116,15 @@ export default class AdoptionPage extends Component {
 
   adopt(bool) {
     let adoptionQueue = this.copyQueue(this.state.adoptionQueue);
-    adoptionQueue.dequeue();
     let petQueue = this.copyQueue(this.state.petQueue);
+    let adopted = petQueue.dequeue().name;
+    let adoptee = adoptionQueue.dequeue().name;
     if (bool) {
       this.setState({
         petQueue: petQueue || null,
         adoptionQueue: adoptionQueue || null,
-        adopted: petQueue.dequeue()
+        adopted: adopted,
+        adoptee: adoptee
       });
     } else this.setState({ petQueue: petQueue || null, adoptionQueue: adoptionQueue || null });
   }
@@ -130,11 +138,10 @@ export default class AdoptionPage extends Component {
         ) : (
           <p>No pets ready for adoption right now</p>
         )}
-        {this.state.adoptionQueue && this.state.adoptionQueue.first ? (
-          <p>Current person in line is {this.state.adoptionQueue.first.value.name}</p>
-        ) : (
-          <p>No one in line to adopt an animal</p>
-        )}
+        <h3>Latest adoption:</h3>
+        {this.state.adopted ? <LastAdoption adopted={this.state.adopted} adoptee={this.state.adoptee} /> : ''}
+
+        <Line queue={this.state.adoptionQueue} />
         {this.state.adoptionQueue &&
           this.state.adoptionQueue.first &&
           this.state.adoptionQueue.first.value.name === 'You' && (
@@ -144,7 +151,6 @@ export default class AdoptionPage extends Component {
               <button onClick={() => this.adopt(false)}>NO</button>
             </>
           )}
-        {this.state.adopted && <Adopted adoptee={this.state.adopted} />}
       </>
     );
   }
