@@ -19,7 +19,6 @@ export default class AdoptionPage extends Component {
   componentDidMount() {
     this.getUsers().then(resUsers => {
       let users = resUsers;
-      console.log(users);
       this.getCats().then(resCats => {
         let cats = resCats;
         this.getDogs().then(resDogs => {
@@ -28,10 +27,7 @@ export default class AdoptionPage extends Component {
           let i = 0;
           let j = 0;
           while (i < cats.length && j < dogs.length) {
-            console.log(i, j);
             if (cats[i].date.valueOf() < dogs[j].date.valueOf()) {
-              console.log('cat date is greater');
-
               queue.enqueue(cats[i]);
               i++;
             } else {
@@ -48,8 +44,6 @@ export default class AdoptionPage extends Component {
             queue.enqueue(dogs[j]);
           }
 
-          console.log(queue);
-
           let adoptionQ = new Queue();
           for (let i = 0; i < users.length; i++) {
             adoptionQ.enqueue(users[i]);
@@ -65,7 +59,6 @@ export default class AdoptionPage extends Component {
       if (!this.state.adoptionQueue || !this.state.adoptionQueue.first) return;
       if (this.state.adoptionQueue.first.value.name === 'You') return;
 
-      console.log('in set interval');
       let rand = Math.random();
       let adoptionQueue = this.copyQueue(this.state.adoptionQueue);
       let petQueue = this.copyQueue(this.state.petQueue);
@@ -80,7 +73,7 @@ export default class AdoptionPage extends Component {
           adoptee: adoptionQueue.dequeue().name
         });
       }
-    }, 3000);
+    }, 5000);
   }
 
   copyQueue(q) {
@@ -130,7 +123,6 @@ export default class AdoptionPage extends Component {
   }
 
   render() {
-    console.log(this.state.adoptionQueue);
     return (
       <>
         {this.state.petQueue && this.state.petQueue.first ? (

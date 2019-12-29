@@ -3,8 +3,6 @@ import React from 'react';
 export default function PetQueue(props) {
   let first = null;
   if (props.q.first) first = props.q.first.value;
-  console.log(props);
-  console.log(first);
   return (
     <>
       <h2>Currently Up For Adoption</h2>
